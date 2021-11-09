@@ -28,6 +28,8 @@ const InputField = ({
         placeholderTextColor={placeholderTextColor}
         style={[styles.input, inputStyle]}
         maxLength={maxLength}
+        multiline={true}
+        textAlignVertical={true}
       />
       {rightIcon ? (
         <TouchableOpacity onPress={handlePasswordVisibility}>
@@ -47,7 +49,8 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 4,
     flexDirection: 'row',
-    padding: 12
+    padding: 12,
+    flexWrap: 'wrap'
   },
   leftIcon: {
     marginRight: 10
@@ -55,7 +58,8 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     width: '100%',
-    fontSize: 18
+    fontSize: 18,
+    flexWrap: 'wrap'
   },
   rightIcon: {
     alignSelf: 'center',

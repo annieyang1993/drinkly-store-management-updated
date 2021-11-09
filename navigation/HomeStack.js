@@ -21,36 +21,64 @@ export default function AuthStack() {
   const [storeData, setStoreData] = useState({});
   const [items, setItems] = useState([]);
   const [userData, setUserData] = useState({});
+  const [sections, setSections] = useState([]);
+  const [restaurantPreferences, setRestaurantPreferences] = useState([]);
+  const [currentItem, setCurrentItem] = useState({})
+  const [storeHours, setStoreHours] = useState({})
   const auth = Firebase.auth();
   const { user, setUser, loggedIn, setLoggedIn } = useContext(AuthenticatedUserContext);
-  const handleSignOut = async () => {
-    try {
-      await auth.signOut();
-      setLoggedIn(false);
-    } catch (error) {
-    }
-  };
 
   const getStore = async() => {
       const userTemp = await Firebase.firestore().collection('users')
       .doc(user.uid).get();
-      console.log(user.uid);
-      console.log(userTemp.data().restaurant_id)
-      await setUserData(userTemp.data());
+      setUserData(userTemp.data());
       const restaurantTemp = await Firebase.firestore().collection('restaurants')
       .doc(userTemp.data().restaurant_id).get();
-      await setStoreData(restaurantTemp.data());
-      console.log(restaurantTemp.data());
+      setStoreData(restaurantTemp.data());
+      setSections(restaurantTemp.data().sections);
+
+      const restPreferences = await Firebase.firestore().collection('restaurants').doc(restaurantTemp.data().restaurant_id).collection('add-ons').get();
+      const restaurantPreferencesTemp = [];
+      restPreferences.docs.map((pref, j)=>{
+          restaurantPreferencesTemp.push(pref.data())
+      })
+      setRestaurantPreferences(restaurantPreferencesTemp);
+
+      const hours = {};
+        const firebaseHours = await Firebase.firestore().collection('restaurants').doc(restaurantTemp.data().restaurant_id).collection('operating hours').get();
+        firebaseHours.docs.map((day, i)=>{
+            hours[day.id]=day.data();
+        })
+
+        console.log("HOME STACK", hours);
+        await setStoreHours(hours);
   }
 
-  useEffect(()=>{
-      getStore();
+    const getHours = async () =>{
+        const hours = {};
+        const firebaseHours = await Firebase.firestore().collection('restaurants').doc(authContext.storeData.restaurant_id).collection('operating hours').get();
+        firebaseHours.docs.map((day, i)=>{
+            hours[day.id]=day.data();
+        })
+
+        console.log("HOME STACK", hours);
+        await setStoreHours(hours);
+    }
+
+  useEffect(async ()=>{
+      console.log('reloaded home stack')
+      await getStore();
+
   }, [])
 
 
 
+
+
   return (
-      <AuthContext.Provider value={{storeData, setStoreData, userData, setUserData}}>
+      <AuthContext.Provider value={{storeData, setStoreData, userData, setUserData, sections, setSections, getStore, 
+      items, setItems, restaurantPreferences, setRestaurantPreferences, currentItem, setCurrentItem,
+      storeHours, setStoreHours}}>
         <View style={{height: Dimensions.get("screen").height}}>
             <Tab.Navigator
                 independent={true}

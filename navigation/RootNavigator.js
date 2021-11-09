@@ -30,13 +30,13 @@ export default function RootNavigator() {
         //onsole.log(authenticatedUser);
         //console.log(authenticatedUser.uid)
         const type = await Firebase.firestore().collection('users').doc(authenticatedUser.uid).get()
-        console.log("TYPE", type)
+        //console.log("TYPE", type)
         if (type.data().customer_type==='StoreManagement'){
             setLoggedIn(true);
         }
         setIsLoading(false);
       } catch (error) {
-        console.log(error);
+        //console.log(error);
       }
     });
 
@@ -44,13 +44,13 @@ export default function RootNavigator() {
     return unsubscribeAuth;
   }, []);
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size='large' />
-      </View>
-    );
-  }
+//   if (isLoading) {
+//     return (
+//       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//         <ActivityIndicator size='large' />
+//       </View>
+//     );
+//   }
 
   return (
     <NavigationContainer>
